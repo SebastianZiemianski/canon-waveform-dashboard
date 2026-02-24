@@ -1,0 +1,33 @@
+# This file checks the title of the pull request
+# The title of a pull request is by default and should be used as the subject(name) of the squash commit
+
+name: Pull Request Title Checks
+
+on:
+  pull_request:
+    branches:
+      - develop
+      # - main # Disabled for workflow minutes usage reduction
+
+jobs:
+  pull-request-title-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Pull Request Title
+        env:
+          PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          # Pattern for validating the Pull Request Title
+          pattern="^[a-z]+(\([a-z0-9\-_]+\))?: .+$"
+          
+          # A more strict pattern
+          # pattern="^(build|chore|ci|docs|feat|fix|perf|refactor|style|team|test)(\([a-z0-9\-_]+\))?: .+$"
+
+          if [[ "$PULL_REQUEST_TITLE" =~ $pattern ]]; then
+            echo "Pull Request Title: $PULL_REQUEST_TITLE matches regex: $pattern"
+          else
+            echo "::error::Pull Request Title: $PULL_REQUEST_TITLE does not match regex: $pattern"
+            echo "::notice::The Pull Request Title must match regex: $pattern"
+            echo "::notice::For more information ask Ben"
+            exit 1
+          fi

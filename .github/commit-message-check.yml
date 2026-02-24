@@ -1,0 +1,52 @@
+# This workflow prevents wrongly formatted commit messages from being merged to protected branches
+# This workflow should only be used for branches with merge or rebase pull requests
+
+# The workflow fails if the subject of a commit message does not match the pattern
+
+name: Commit Message Checks
+
+on:
+  pull_request:
+    branches:
+      - develop
+      # - main # Disabled for workflow minutes usage reduction
+
+jobs:
+  commit-message-check:
+    runs-on: ubuntu-latest
+    steps: 
+    
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Check Commit Subjects
+        run: |
+          # Pattern for validating the Commit Subjects
+          pattern="^([a-z]+(\([a-z0-9\-_]+\))?: .+|(Merge|merge|MERGE) .+)$"
+          
+          # A more strict pattern
+          # pattern="^(build|chore|ci|docs|feat|fix|perf|refactor|style|team|test)(\([a-z0-9\-_]+\))?: .+$"
+
+          commits=$(git rev-list "origin/${{ github.event.pull_request.base.ref }}".."origin/${{ github.event.pull_request.head.ref }}")
+
+          invalid_subject_count=0
+
+          for commit in $commits; do
+            subject=$(git log -1 --pretty=%s $commit)
+
+            if [[ "$subject" =~ $pattern ]]; then
+              echo "Commit $commit Subject: $subject matches regex: $pattern"
+            else
+              invalid_subject_count=$((invalid_subject_count + 1))
+              echo "::error::Commit $commit Subject: $subject does not match regex: $pattern"
+            fi
+          done
+
+          if [[ $invalid_subject_count -gt 0 ]]; then
+            echo "::error::$invalid_subject_count commits have an invalid subject"
+            echo "::notice::The subjects of commit messages must match regex: $pattern"
+            echo "::notice::For more information ask Ben"
+            exit 1
+          fi
