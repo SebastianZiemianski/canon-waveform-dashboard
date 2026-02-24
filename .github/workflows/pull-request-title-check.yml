@@ -6,8 +6,8 @@ name: Pull Request Title Checks
 on:
   pull_request:
     branches:
-      - develop
-      - main
+      - development
+      # - main # Disabled, since the development is the only branch we can merge main with
 
 jobs:
   pull-request-title-check:
