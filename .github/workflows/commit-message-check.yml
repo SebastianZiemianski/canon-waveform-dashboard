@@ -8,8 +8,8 @@ name: Commit Message Checks
 on:
   pull_request:
     branches:
-      - develop
-      # - main # Disabled for workflow minutes usage reduction
+      - development
+      - main
 
 jobs:
   commit-message-check:
@@ -47,6 +47,6 @@ jobs:
           if [[ $invalid_subject_count -gt 0 ]]; then
             echo "::error::$invalid_subject_count commits have an invalid subject"
             echo "::notice::The subjects of commit messages must match regex: $pattern"
-            echo "::notice::For more information ask Ben"
+            echo "::notice::For more information ask Bram"
             exit 1
           fi

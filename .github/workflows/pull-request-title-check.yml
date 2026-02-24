@@ -7,7 +7,7 @@ on:
   pull_request:
     branches:
       - develop
-      # - main # Disabled for workflow minutes usage reduction
+      - main
 
 jobs:
   pull-request-title-check:
@@ -28,6 +28,6 @@ jobs:
           else
             echo "::error::Pull Request Title: $PULL_REQUEST_TITLE does not match regex: $pattern"
             echo "::notice::The Pull Request Title must match regex: $pattern"
-            echo "::notice::For more information ask Ben"
+            echo "::notice::For more information ask Bram"
             exit 1
           fi
