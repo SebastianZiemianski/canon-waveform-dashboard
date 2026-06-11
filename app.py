@@ -298,9 +298,15 @@ N_CHIPS   = 30
 
 @st.cache_resource
 def load_nozzle_models():
-    rf_path  = 'models/rf_nozzle_sd.pkl'
-    mlp_path = 'models/mlp_nozzle_sd.pkl'
-    rf_m  = joblib.load(rf_path)  if os.path.exists(rf_path)  else None
+    rf_path       = 'models/rf_nozzle_sd.pkl'
+    rf_small_path = 'models/rf_nozzle_sd_small.pkl'
+    mlp_path      = 'models/mlp_nozzle_sd.pkl'
+    if os.path.exists(rf_path):
+        rf_m = joblib.load(rf_path)
+    elif os.path.exists(rf_small_path):
+        rf_m = joblib.load(rf_small_path)
+    else:
+        rf_m = None
     mlp_m = joblib.load(mlp_path) if os.path.exists(mlp_path) else None
     return rf_m, mlp_m
 
